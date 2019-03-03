@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>Video Streaming Demonstration</title>
+  </head>
+  <body>
+    <h1>Video Streaming Demonstration</h1>
+    <img id="bg" src="{{ url_for('video_feed') }}">
+
+    <p><a href=# id=test>submit</a>
+    <p id="result">Test</p>
+  </body>
+</html>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  $(function() {
+    $('a#test').bind('click', function() {
+      $.getJSON($SCRIPT_ROOT + '/move_forward', {
+      }, function(data) {
+        $("#result").text(data.value);
+      });
+      return false;
+    });
+  });
+</script>
