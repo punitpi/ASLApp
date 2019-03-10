@@ -39,13 +39,15 @@ class VideoCamera(object):
         ret, jpeg = cv2.imencode('.jpg', img)
         return jpeg.tobytes()
 
-    def get_predictions(self):
+    def get_predictions():
         with tf.gfile.FastGFile("logs/trained_graph.pb", 'rb') as f:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())
             _ = tf.import_graph_def(graph_def, name='')
 
         with tf.Session() as sess:
+            image_path = "temp.jpg"
+            image_data = tf.gfile.FastGFile(image_path, 'rb').read()
             os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
             label_lines = [line.rstrip() for line
                    in tf.gfile.GFile("logs/trained_labels.txt")]
@@ -53,7 +55,7 @@ class VideoCamera(object):
             # Read the image_data
             # Loads label file, strips off carriage return
             predictions = sess.run(softmax_tensor, \
-                {'DecodeJpeg/contents:0': self.data})
+                {'DecodeJpeg/contents:0': image_data})
 
             # Sort to show labels of first prediction in order of confidence
             top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]

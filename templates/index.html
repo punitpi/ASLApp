@@ -4,23 +4,90 @@
   </head>
   <body>
     <h1>Video Streaming Demonstration</h1>
-    <img id="bg" src="{{ url_for('video_feed') }}">
+    <!-- <img id="bg" src="{{ url_for('video_feed') }}"> -->
+    <div id="screenshot" style="text-align:center;">
 
+    
+    <video autoplay></video>
+    <img src="">
+    <canvas style="display:none;"></canvas>
+    <button class="capture-button">Capture video</button>
+    <button id="screenshot-button">Take screenshot</button>
     <p><a href=# id=test>submit</a>
     <p id="result">Test</p>
+  </div>
   </body>
 </html>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
-  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  const constraints = {
+    video: {width: {min: 640}, height: {min: 480}} 
+};
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  const captureVideoButton =
+  document.querySelector('#screenshot .capture-button');
+  const screenshotButton = document.querySelector('#screenshot-button');
+  const img = document.querySelector('#screenshot img');
+  const video = document.querySelector('#screenshot video');
+
+  const canvas = document.createElement('canvas');
+
+  captureVideoButton.onclick = function() {
+    navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+  };
+
+
+
+  function handleSuccess(stream) {
+    screenshotButton.disabled = false;
+    video.srcObject = stream;
+  }
+
+  function handleError(err) { 
+    console.log(err.name + ": " + err.message); 
+  }
+  
+
   $(function() {
-    $('a#test').bind('click', function() {
-      $.getJSON($SCRIPT_ROOT + '/move_forward', {
-      }, function(data) {
-        $("#result").text(data.value);
-      });
-      return false;
+    $('#screenshot-button').click(function() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      // Other browsers will fall back to image/png
+      img.src = canvas.toDataURL('image/jpg');
+        $.ajax({
+          url: $SCRIPT_ROOT + '/move_forward',
+          type: 'POST',
+          dataType: 'json',
+          data: img.src,
+          complete: function(xhr, textStatus) {
+          // Request complete.
+          },
+          // Request was successful.
+          success: function(response, textStatus, xhr) {
+            console.log('Response: ', response);
+            // Conversion successful.
+            if (response.status_code === 200) {
+              imageURL = response.data.image_url;
+              // Paste the PNG image url into the input field.
+              that.imageURLInput.value = imageURL;
+                                                  that.imageURLInput.removeAttribute('disabled');
+            }
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            // Some error occured.
+            console.log('Error: ', errorThrown);
+            imageURLInput.value = 'An error occured.';
+          }
+        });  
+        $('a#test').bind('click', function() {
+          $.getJSON($SCRIPT_ROOT + '/move_forward', {
+          }, function(data) {
+            $("#result").text(data.value);
+          });
+          return false;
+        });
     });
-  });
+});
 </script>

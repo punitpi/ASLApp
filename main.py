@@ -13,8 +13,9 @@
 # 1. Install Python dependencies: cv2, flask. (wish that pip install works like a charm)
 # 2. Run "python main.py".
 # 3. Navigate the browser to the local webpage.
-from flask import Flask, render_template, Response, jsonify
+from flask import Flask, render_template, Response, jsonify, redirect, request, url_for
 from camera import VideoCamera
+import base64
 app = Flask(__name__)
 
 camera =  VideoCamera()
@@ -25,7 +26,6 @@ def index():
 
 
 def gen():
-    image_Data = "tmp/image/crop_image.jpg"
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
@@ -35,10 +35,16 @@ def gen():
 def video_feed():
     return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/move_forward')
+@app.route('/move_forward', methods=['GET', 'POST'])
 def move_forward():
-    prediction_message, score = camera.get_predictions()
-    return jsonify({'value': prediction_message})
+        
+        jsdata = request.get_data() 
+        jpg_recovered = base64.decodestring(jsdata)
+        f = open("temp.jpg", "w")
+        f.write(jpg_recovered)
+        f.close()
+        prediction_message, score = camera.get_predictions()
+        return jsonify({'value': prediction_message})
 
 
 if __name__ == '__main__':
