@@ -39,7 +39,7 @@ class VideoCamera(object):
         ret, jpeg = cv2.imencode('.jpg', img)
         return jpeg.tobytes()
 
-    def get_predictions():
+    def get_predictions(self):
         with tf.gfile.FastGFile("logs/trained_graph.pb", 'rb') as f:
             graph_def = tf.GraphDef()
             graph_def.ParseFromString(f.read())

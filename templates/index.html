@@ -55,7 +55,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
       canvas.height = video.videoHeight;
       canvas.getContext('2d').drawImage(video, 0, 0);
       // Other browsers will fall back to image/png
-      img.src = canvas.toDataURL('image/jpg');
+      img.src = canvas.toDataURL('image/jpeg');
         $.ajax({
           url: $SCRIPT_ROOT + '/move_forward',
           type: 'POST',
@@ -66,28 +66,17 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           },
           // Request was successful.
           success: function(response, textStatus, xhr) {
-            console.log('Response: ', response);
+            console.log('Word: ', response.PredMessage + ' (Score:' + response.PredScore + ')');
+            $("#result").text('Prediction Word: ' + response.PredMessage + ' (Score: '+ response.PredScore + ')');
             // Conversion successful.
-            if (response.status_code === 200) {
-              imageURL = response.data.image_url;
-              // Paste the PNG image url into the input field.
-              that.imageURLInput.value = imageURL;
-                                                  that.imageURLInput.removeAttribute('disabled');
-            }
           },
           error: function(xhr, textStatus, errorThrown) {
             // Some error occured.
             console.log('Error: ', errorThrown);
-            imageURLInput.value = 'An error occured.';
           }
         });  
-        $('a#test').bind('click', function() {
-          $.getJSON($SCRIPT_ROOT + '/move_forward', {
-          }, function(data) {
-            $("#result").text(data.value);
-          });
-          return false;
-        });
+        return false;
+
     });
 });
 </script>
