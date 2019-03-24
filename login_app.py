@@ -1,40 +1,31 @@
-#!/usr/bin/env python
-#
-# Project: Video Streaming with Flask
-# Author: Log0 <im [dot] ckieric [at] gmail [dot] com>
-# Date: 2014/12/21
-# Website: http://www.chioka.in/
-# Description:
-# Modified to support streaming out with webcams, and not just raw JPEGs.
-# Most of the code credits to Miguel Grinberg, except that I made a small tweak. Thanks!
-# Credits: http://blog.miguelgrinberg.com/post/video-streaming-with-flask
-#
-# Usage:
-# 1. Install Python dependencies: cv2, flask. (wish that pip install works like a charm)
-# 2. Run "python main.py".
-# 3. Navigate the browser to the local webpage.
-from flask import Flask, render_template, Response, jsonify, redirect, request, url_for, flash,flash, session, abort
-from camera import VideoCamera
-from PIL import Image
-import re
-from io import BytesIO
-import io
-import base64
-import secrets
+"""
+Simple login mechanism implemented with Flask and Flask-Sqlalchemy
+Makes use of werkzeug.security for password hashing.
+
+1. Create new user with signup form.
+2. Authenticate user with Login form
+3. Send authorized user to home page
+
+https://techmonger.github.io/10/flask-simple-authentication/
+"""
+from flask import Flask, render_template, request, url_for, redirect, flash, \
+session, abort
 from flask_sqlalchemy import sqlalchemy, SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
 # Change dbname here
 db_name = "auth.db"
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{db}'.format(db=db_name)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
 # SECRET_KEY required for session, flash and Flask Sqlalchemy to work
-app.config['SECRET_KEY'] = 'ConfigureStrongSecretKeyHere'
+app.config['SECRET_KEY'] = 'configure strong secret key here'
+
 db = SQLAlchemy(app)
-camera =  VideoCamera()
 
 
 class User(db.Model):
@@ -45,11 +36,10 @@ class User(db.Model):
     def __repr__(self):
         return '' % self.username
 
+
 def create_db():
     """ # Execute this first time to create new db in current directory. """
     db.create_all()
-
-
 
 
 @app.route("/signup/", methods=["GET", "POST"])
@@ -58,6 +48,7 @@ def signup():
     Implements signup functionality. Allows username and password for new user.
     Hashes password with salt using werkzeug.security.
     Stores username and hashed password inside database.
+
     Username should to be unique else raises sqlalchemy.exc.IntegrityError.
     """
 
@@ -119,7 +110,8 @@ def login():
         else:
             flash("Invalid username or password.")
 
-    return render_template("Login.html")
+    return render_template("login_form.html")
+
 
 @app.route("/user/<username>/")
 def user_home(username):
@@ -130,25 +122,16 @@ def user_home(username):
     if not session.get(username):
         abort(401)
   
-    return render_template("HomePage.html", username=username)
-
-@app.route('/predict', methods=['GET', 'POST'])
-def predict():
-
-    return render_template("Predict.html")
-
-@app.route('/move_forward', methods=['GET', 'POST'])
-def move_forward():  
-        jsdata = request.get_data()
-        imgstr = re.search(b'data:image/jpeg;base64,(.*)', jsdata).group(1)
-        image_bytes = io.BytesIO(base64.b64decode(imgstr))
-        output=open('temp.jpg', 'wb')
-        decoded=base64.b64decode(imgstr)
-        output.write(decoded)
-        output.close()
-        prediction_message, score = camera.get_predictions()
-        return jsonify({'PredMessage': prediction_message, 'PredScore': score * 100})
+    return render_template("user_home.html", username=username)
 
 
-if __name__ == '__main__':
-    app.run(host='localhost', debug=True)
+@app.route("/logout/<username>")
+def logout(username):
+    """ Logout user and redirect to login page with success message."""
+    session.pop(username, None)
+    flash("successfully logged out.")
+    return redirect(url_for('login'))
+
+
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)

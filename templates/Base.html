@@ -12,14 +12,13 @@
     
 
     <!-- Bootstrap core CSS-->
-    {% load static %}
-    <link href="{% static 'mainapp/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename = 'mainapp/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Custom fonts for this template-->
-    <link href="{% static 'mainapp/css/customfont.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename = 'mainapp/css/customfont.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Custom styles for this template-->
-    <link href="{% static 'mainapp/css/custompage.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename = 'mainapp/css/custompage.min.css') }}" rel="stylesheet" type="text/css">
 
 </head>
 
@@ -95,7 +94,7 @@
         <!-- Sidebar -->
         <ul class="sidebar navbar-nav toggled">
             <li class="nav-item active">
-                <a class="nav-link" href="{% url 'home_page' %}">
+                <a class="nav-link" href="{{ url_for( 'predict') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Learn ASL</span>
                 </a>
@@ -107,12 +106,12 @@
                     <span>Prediction</span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-                    <a class="dropdown-item" href="{% url 'train' %}">Train</a>
-                    <a class="dropdown-item" href="{% url 'predict' %}">Predict</a>
+                    <a class="dropdown-item" href="{{ url_for( 'predict') }}">Predict</a>
                 </div>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">
+    <div id="wrapper">
+                <a class="nav-link" href="{{ url_for( 'predict') }}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>About</span></a>
             </li>
@@ -175,15 +174,15 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="{% static 'mainapp/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'mainapp/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{{ url_for('static', filename = 'mainapp/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename = 'mainapp/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="{% static 'mainapp/js/jquery.easing.min.js' %}"></script>
+    <script src="{{ url_for('static', filename = 'mainapp/js/jquery.easing.min.js') }}"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="{% static 'mainapp/js/custompage.min.js' %}"></script>
-    <script src="{% static 'mainapp/js/customfont.min.js' %}"></script>
+    <script src="{{ url_for('static', filename = 'mainapp/js/custompage.min.js') }}"></script>
+    <script src="{{ url_for('static', filename = 'mainapp/js/customfont.min.js') }}"></script>
 
 </body>
 

@@ -8,7 +8,80 @@
 
 <body>
     <h1>Video Streaming Demonstration</h1>
-    <img id="bg" src="{% url video_feed) %}">
+    <div id="screenshot" style="text-align:center;">
+
+    
+    <video autoplay></video>
+    <img src="">
+    <canvas style="display:none;"></canvas>
+    <button class="capture-button">Capture video</button>
+    <button id="screenshot-button">Take screenshot</button>
+    <p><a href=# id=test>submit</a>
+    <p id="result">Test</p>
+  </div>
 </body>
 
 {% endblock content %}
+
+{{ url_for('static', filename = 'mainapp/static/mainapp/jquery/jquery.min.js') }}"
+<script src="{{ url_for('static', filename = 'mainapp/static/mainapp/jquery/jquery.min.js') }}"></script>
+<script type=text/javascript>
+  const constraints = {
+    video: {width: {min: 640}, height: {min: 480}} 
+};
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  const captureVideoButton =
+  document.querySelector('#screenshot .capture-button');
+  const screenshotButton = document.querySelector('#screenshot-button');
+  const img = document.querySelector('#screenshot img');
+  const video = document.querySelector('#screenshot video');
+
+  const canvas = document.createElement('canvas');
+
+  captureVideoButton.onclick = function() {
+    navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+  };
+
+
+
+  function handleSuccess(stream) {
+    screenshotButton.disabled = false;
+    video.srcObject = stream;
+  }
+
+  function handleError(err) { 
+    console.log(err.name + ": " + err.message); 
+  }
+  
+
+  $(function() {
+    $('#screenshot-button').click(function() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      // Other browsers will fall back to image/png
+      img.src = canvas.toDataURL('image/jpeg');
+        $.ajax({
+          url: $SCRIPT_ROOT + '/move_forward',
+          type: 'POST',
+          dataType: 'json',
+          data: img.src,
+          complete: function(xhr, textStatus) {
+          // Request complete.
+          },
+          // Request was successful.
+          success: function(response, textStatus, xhr) {
+            console.log('Word: ', response.PredMessage + ' (Score:' + response.PredScore + ')');
+            $("#result").text('Prediction Word: ' + response.PredMessage + ' (Score: '+ response.PredScore + ')');
+            // Conversion successful.
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            // Some error occured.
+            console.log('Error: ', errorThrown);
+          }
+        });  
+        return false;
+
+    });
+});
+</script>

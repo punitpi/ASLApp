@@ -1,0 +1,49 @@
+<!DOCTYPE html5>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Sign Up</title>
+
+    <!-- Bootstrap core CSS-->
+    <link href="{{ url_for('static', filename = 'mainapp/bootstrap/css/bootstrap.min.css') }} rel="stylesheet" type="text/css">
+
+    <!-- Custom fonts for this template-->
+    <link href="{{ url_for('static', filename = 'mainapp/css/customfont.min.css') }} rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template-->
+    <link href="{{ url_for('static', filename = 'mainapp/css/custompage.min.css') }} rel="stylesheet" type="text/css">
+
+</head>
+<body>
+  <h2>Sign Up</h2>
+  <form id="signup" action="{{ url_for('signup')}}" method="post">
+    Username :  <input type="text" id="username" name="username" />
+    Password : <input type="password" id="password" name="password" />
+    <input type="submit" id="submit" text="Signup" />
+  </form>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+
+     <!-- Bootstrap core JavaScript-->
+     <script src="{{ url_for('static', filename = 'mainapp/jquery/jquery.min.js') }}"></script>
+     <script src="{{ url_for('static', filename = 'mainapp/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+ 
+     <!-- Core plugin JavaScript-->
+     <script src="{{ url_for('static', filename = 'mainapp/js/jquery.easing.min.js') }}"></script>
+</body>
+</html>
