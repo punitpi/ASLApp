@@ -137,7 +137,7 @@ def predict():
 
     return render_template("Predict.html")
 
-@app.route('/move_forward', methods=['GET', 'POST'])
+@app.route('/predict/move_forward', methods=['GET', 'POST'])
 def move_forward():  
         jsdata = request.get_data()
         imgstr = re.search(b'data:image/jpeg;base64,(.*)', jsdata).group(1)

@@ -4,42 +4,43 @@
 {% block content %}
 <title>Predict</title>
 <h1 class="align-content-center">Predict</h1>
-
-
-<body>
     <h1>Video Streaming Demonstration</h1>
     <div id="screenshot" style="text-align:center;">
 
-    
-    <video autoplay></video>
-    <img src="">
+    <div id="myCanvas" style="">   
+      <video autoplay width="320" height="240"></video>
+      <img src="" width="320" height="x40" style="display: inline;">
+    </div>
     <canvas style="display:none;"></canvas>
     <button class="capture-button">Capture video</button>
     <button id="screenshot-button">Take screenshot</button>
-    <p><a href=# id=test>submit</a>
     <p id="result">Test</p>
   </div>
-</body>
-
 {% endblock content %}
 
-{{ url_for('static', filename = 'mainapp/static/mainapp/jquery/jquery.min.js') }}"
-<script src="{{ url_for('static', filename = 'mainapp/static/mainapp/jquery/jquery.min.js') }}"></script>
+{% block tail_js %}
+<!-- <script src="{{ url_for('static', filename = 'mainapp/jquery/jquery.min.js') }}"></script> -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
   const constraints = {
     video: {width: {min: 640}, height: {min: 480}} 
 };
+
+
+
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   const captureVideoButton =
   document.querySelector('#screenshot .capture-button');
   const screenshotButton = document.querySelector('#screenshot-button');
   const img = document.querySelector('#screenshot img');
   const video = document.querySelector('#screenshot video');
+  const overlay = document.querySelector('#screenshot #myCanvas');
 
   const canvas = document.createElement('canvas');
 
   captureVideoButton.onclick = function() {
     navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+
   };
 
 
@@ -47,8 +48,10 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   function handleSuccess(stream) {
     screenshotButton.disabled = false;
     video.srcObject = stream;
+    //overlay.setAttribute("style", "display: block; margin: 30px; background-color: #ffffff; width: 100px; height: 100px; top: 100px; left: 100px; border: 1px solid black; opacity: 0.0; filter: alpha(opacity=60);");
+    //video.setAttribute("style", "display: inline; position: fixed; display: none; width: 100px; height: 100px; top: 100px; left: 100px; border: 1px solid black; background-color: rgba(0,0,0,0); z-index: 2; cursor: pointer;");
   }
-
+  
   function handleError(err) { 
     console.log(err.name + ": " + err.message); 
   }
@@ -62,7 +65,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
       // Other browsers will fall back to image/png
       img.src = canvas.toDataURL('image/jpeg');
         $.ajax({
-          url: $SCRIPT_ROOT + '/move_forward',
+          url: $SCRIPT_ROOT + '/predict/move_forward',
           type: 'POST',
           dataType: 'json',
           data: img.src,
@@ -85,3 +88,4 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     });
 });
 </script>
+{% endblock %}

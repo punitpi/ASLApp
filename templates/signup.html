@@ -10,16 +10,16 @@
     <meta name="author" content="">
 
     <title>Sign Up</title>
-
+    {% block head_css %}
     <!-- Bootstrap core CSS-->
-    <link href="{{ url_for('static', filename = 'mainapp/bootstrap/css/bootstrap.min.css') }} rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename = 'mainapp/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Custom fonts for this template-->
-    <link href="{{ url_for('static', filename = 'mainapp/css/customfont.min.css') }} rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename = 'mainapp/css/customfont.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Custom styles for this template-->
-    <link href="{{ url_for('static', filename = 'mainapp/css/custompage.min.css') }} rel="stylesheet" type="text/css">
-
+    <link href="{{ url_for('static', filename = 'mainapp/css/custompage.min.css') }}" rel="stylesheet" type="text/css">
+    {% endblock %}
 </head>
 <body>
   <h2>Sign Up</h2>
@@ -38,12 +38,13 @@
     {% endif %}
   {% endwith %}
 
-
+  {% block tail_js %}
      <!-- Bootstrap core JavaScript-->
      <script src="{{ url_for('static', filename = 'mainapp/jquery/jquery.min.js') }}"></script>
      <script src="{{ url_for('static', filename = 'mainapp/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
  
      <!-- Core plugin JavaScript-->
      <script src="{{ url_for('static', filename = 'mainapp/js/jquery.easing.min.js') }}"></script>
+     {% endblock %}
 </body>
 </html>
