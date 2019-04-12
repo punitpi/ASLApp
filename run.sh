@@ -8,6 +8,11 @@ choco install python --version 3.7.2 --install-directory 'C:\Python36'
 printf "\n%s\n\n" "Python 3.6.7 installed"
 read -p "Press enter to continue"
 
+printf "\n%s\n\n" "Installing VS Code"
+choco install --install-directory 'C:\Program Files\Microsoft VS Code'
+printf "\n%s\n\n" "VS Code installed"
+read -p "Press enter to continue"
+
 printf "\n%s\n\n" "Installing virtualenv"
 pip install virtualenv
 printf "\n%s\n\n" "virtualenv installed"
