@@ -119,6 +119,8 @@ def login():
         else:
             flash("Invalid username or password.")
 
+    if(session.get('login')):
+        return render_template("HomePage.html")
     return render_template("Login.html")
 
 @app.route('/logout')
