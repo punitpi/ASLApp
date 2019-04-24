@@ -13,7 +13,7 @@
 # 1. Install Python dependencies: cv2, flask. (wish that pip install works like a charm)
 # 2. Run "python main.py".
 # 3. Navigate the browser to the local webpage.
-from flask import Flask, render_template, Response, jsonify, redirect, request, url_for, flash,flash, session, abort
+from flask import Flask, render_template, Response, jsonify, redirect, request, url_for, flash, flash, session, abort
 from camera import VideoCamera
 from PIL import Image
 import re
@@ -34,7 +34,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # SECRET_KEY required for session, flash and Flask Sqlalchemy to work
 app.config['SECRET_KEY'] = 'ConfigureStrongSecretKeyHere'
 db = SQLAlchemy(app)
-camera =  VideoCamera()
+camera = VideoCamera()
 
 
 class User(db.Model):
@@ -45,11 +45,10 @@ class User(db.Model):
     def __repr__(self):
         return '' % self.username
 
+
 def create_db():
     """ # Execute this first time to create new db in current directory. """
     db.create_all()
-
-
 
 
 @app.route("/signup/", methods=["GET", "POST"])
@@ -114,40 +113,57 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.pass_hash, password):
-            session[username] = True
-            return redirect(url_for("user_home", username=username))
+            session['username'] = username
+            session['login'] = True
+            return redirect(url_for("user_home"))
         else:
             flash("Invalid username or password.")
 
     return render_template("Login.html")
 
-@app.route("/user/<username>/")
-def user_home(username):
+@app.route('/logout')
+def logout():
+   # remove the username from the session if it is there
+   session.pop('username', None)
+   session.pop('login', None)
+   return redirect(url_for('login'))
+
+@app.route("/user")
+def user_home():
     """
     Home page for validated users.
 
     """
-    if not session.get(username):
+    if not session.get('login'):
         abort(401)
-  
-    return render_template("HomePage.html", username=username)
 
-@app.route('/predict', methods=['GET', 'POST'])
+    return render_template("HomePage.html")
+
+@app.route('/about')
+def about():
+    if not session.get('login'):
+        abort(401)
+    return render_template("About.html")
+
+@app.route('/predict')
 def predict():
-
+    if not session.get('login'):
+        abort(401)
     return render_template("Predict.html")
 
 @app.route('/predict/move_forward', methods=['GET', 'POST'])
-def move_forward():  
-        jsdata = request.get_data()
-        imgstr = re.search(b'data:image/jpeg;base64,(.*)', jsdata).group(1)
-        image_bytes = io.BytesIO(base64.b64decode(imgstr))
-        output=open('temp.jpg', 'wb')
-        decoded=base64.b64decode(imgstr)
-        output.write(decoded)
-        output.close()
-        prediction_message, score = camera.get_predictions()
-        return jsonify({'PredMessage': prediction_message, 'PredScore': score * 100})
+def move_forward():
+    if not session.get('login'):
+        abort(401)
+    jsdata=request.get_data()
+    imgstr=re.search(b'data:image/jpeg;base64,(.*)', jsdata).group(1)
+    image_bytes=io.BytesIO(base64.b64decode(imgstr))
+    output=open('temp.jpg', 'wb')
+    decoded=base64.b64decode(imgstr)
+    output.write(decoded)
+    output.close()
+    prediction_message, score=camera.get_predictions()
+    return jsonify({'PredMessage': prediction_message, 'PredScore': score * 100})
 
 
 if __name__ == '__main__':

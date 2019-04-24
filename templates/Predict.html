@@ -2,20 +2,33 @@
 
 
 {% block content %}
-<title>Predict</title>
-<h1 class="align-content-center">Predict</h1>
-    <h1>Video Streaming Demonstration</h1>
-    <div id="screenshot" style="text-align:center;">
+<div class="container-fluid">
+    <title>Predict</title>
+    <h1 class="align-content-center">Sign Prediction Demonstration</h1>
+      <div id="screenshot" style="text-align:center;">
+  
+      <div id="myCanvas" class="container" style=""> 
+          <div class="row">
+              <!-- Team Member 1 -->
+              <div class="col-"> 
+                  <video autoplay></video>
+              </div>
 
-    <div id="myCanvas" style="">   
-      <video autoplay width="320" height="240"></video>
-      <img src="" width="320" height="x40" style="display: inline;">
+              <div class="col-"> 
+                  <img src="" width="320" height="240" id="imageTag">
+              </div>
+          </div>
+          
+      </div>
+      <canvas style="display:none;"></canvas>
+      <button type="button" class="capture-button btn btn-success">Start Video</button>
+      <button type="button" id="screenshot-button" class="btn btn-primary">Predict</button>
+      <button type="button" class="stop-capture-button btn btn-danger">Stop Video</button>
+
+      <p id="result"></p>
     </div>
-    <canvas style="display:none;"></canvas>
-    <button class="capture-button">Capture video</button>
-    <button id="screenshot-button">Take screenshot</button>
-    <p id="result">Test</p>
-  </div>
+</div>
+
 {% endblock content %}
 
 {% block tail_js %}
@@ -29,10 +42,10 @@
 
 
 $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-  const captureVideoButton =
-  document.querySelector('#screenshot .capture-button');
+  const captureVideoButton = document.querySelector('#screenshot .capture-button');
+  const stopCaptureVideoButton = document.querySelector('#screenshot .stop-capture-button');
   const screenshotButton = document.querySelector('#screenshot-button');
-  const img = document.querySelector('#screenshot img');
+  const img = document.querySelector('#screenshot #myCanvas img');
   const video = document.querySelector('#screenshot video');
   const overlay = document.querySelector('#screenshot #myCanvas');
 
@@ -42,7 +55,11 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
 
   };
+  stopCaptureVideoButton.onclick = function() {
+    video.pause();
 
+  };
+  
 
 
   function handleSuccess(stream) {
@@ -58,7 +75,9 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   
 
   $(function() {
+    $('#imageTag').hide();
     $('#screenshot-button').click(function() {
+      $('#imageTag').show();
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       canvas.getContext('2d').drawImage(video, 0, 0);
@@ -76,6 +95,7 @@ $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
           success: function(response, textStatus, xhr) {
             console.log('Word: ', response.PredMessage + ' (Score:' + response.PredScore + ')');
             $("#result").text('Prediction Word: ' + response.PredMessage + ' (Score: '+ response.PredScore + ')');
+            $('#imageTag').hide();
             // Conversion successful.
           },
           error: function(xhr, textStatus, errorThrown) {
